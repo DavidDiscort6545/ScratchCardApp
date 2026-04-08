@@ -4,17 +4,25 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.assignment.scratchcard.presentation.ThemePreviews
+import com.assignment.scratchcard.presentation.composable.shared.ButtonWithText
 import com.assignment.scratchcard.presentation.scratchcard.ScratchCardScreen
 import com.assignment.scratchcard.ui.theme.ScratchCardTheme
 import kotlinx.serialization.Serializable
@@ -64,39 +72,57 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.padding(innerPadding),
                         ){
                             composable<MainOverviewRoute> {
-                                // Vytvoríme inštanciu faku (zatiaľ ručne, kým nemáš Koin)
-                                //val scratchCardRepository = remember { FakeScratchCardRepository() }//TODO use KOIN
 
-//                                val scratchCardViewModel = remember {
-//                                    ScratchCardViewModel(
-//                                        getScratchCardUseCase = GetScratchCardUseCase(scratchCardRepository),
-//                                        activateCardUseCase = ActivateCardUseCase(scratchCardRepository),
-//                                        saveScratchCardUseCase = SaveScratchCardUseCase(scratchCardRepository),
-//                                        updateScratchProgressUseCase = UpdateScratchProgressUseCase()
-//                                    )
-//                                }
+                                //TODO move these columns are rows to the screen itself and here just provide the data for the screen
 
-                                Row(
-                                    modifier = Modifier.fillMaxWidth()
+                                Column(
+                                    modifier = Modifier.fillMaxHeight(),
+                                    verticalArrangement = Arrangement.Center
                                 ) {
-                                    ScratchCardScreen()
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        ScratchCardScreen(false)
+                                    }
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp)
+                                            .align(Alignment.CenterHorizontally)
+
+                                    ) {
+                                        ButtonWithText(
+                                            text = "Scratch the Card here",
+                                            modifier = Modifier.width(100.dp),
+                                            onClick = {
+                                                navController.navigate(ScratchCardRoute)
+                                            }
+                                        )
+                                        Spacer(Modifier.weight(1f))
+                                        ButtonWithText(
+                                            text = "Activate Card !",
+                                            enabled = false,
+                                            modifier = Modifier.width(100.dp),
+                                            onClick = {
+                                                navController.navigate(ActivationRoute(null))
+                                            }
+                                        )
+                                    }
+
                                 }
                             }
                             composable<ScratchCardRoute> {
-                            //TODO
+                                Column(
+                                    modifier = Modifier.fillMaxHeight(),
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        ScratchCardScreen(true)
+                                    }
+                                }
 
-//                                    ButtonWithText(
-//                                        text = "ScratchCardRoute",
-//                                        onClick = {
-//                                            navController.navigate(ScratchCardRoute)
-//                                        }
-//                                    )
-//                                    ButtonWithText(
-//                                        text = "ActivationRoute",
-//                                        onClick = {
-//                                            navController.navigate(ActivationRoute(null))
-//                                        }
-//                                    )
                             }
                             composable<ActivationRoute> {
                             //TODO

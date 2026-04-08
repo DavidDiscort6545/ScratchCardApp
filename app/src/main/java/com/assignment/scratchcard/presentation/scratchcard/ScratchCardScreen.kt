@@ -2,7 +2,6 @@ package com.assignment.scratchcard.presentation.scratchcard
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,6 +21,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ScratchCardScreen(
+    isEditable: Boolean,
     viewModel: ScratchCardViewModel = koinViewModel()
 ) {
 
@@ -31,7 +31,8 @@ fun ScratchCardScreen(
     //TODO play around with uiState variables here
 
     ScratchCardContent(
-        card = card
+        card = card,
+        isEditable = isEditable,
     ) { newPoints, progress ->
         viewModel.updateScratchState(newPoints, progress)
     }
@@ -40,11 +41,15 @@ fun ScratchCardScreen(
 @Composable
 fun ScratchCardContent(
     card: ScratchCard?,
+    isEditable: Boolean,
     onScratchStateChanged: (newPoints: List<Offset>, progress: Float) -> Unit
 ) {
+
+    //TODO move here all of the stuff from mainActivity - like those 2 buttons for example
+
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            //.fillMaxSize() //TODO enable this after adding those 2 navigation buttons
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -56,7 +61,7 @@ fun ScratchCardContent(
                     .height(200.dp),
                 lines = card.scratchedLines, //send saved lines
                 cardCodeDisplayText = card.code,
-                isEditable = true,
+                isEditable = isEditable,
                 onScratchStateChanged = onScratchStateChanged,
             )
             Text(text = "Scratch progress: ${(card.scratchProgress * 100).toInt()}%")
@@ -73,6 +78,7 @@ fun GreetingPreview() {
                 code = "Here you will see the code after reveal",
                 state = ScratchCardState.Unscratched,
             ),
+            isEditable = true,
             onScratchStateChanged = { _, _ -> },
         )
     }

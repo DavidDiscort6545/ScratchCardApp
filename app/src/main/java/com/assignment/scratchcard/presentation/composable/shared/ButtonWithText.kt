@@ -18,6 +18,7 @@ fun ButtonWithText(
     ) {
         Text(
             text = text,
+            maxLines = 2,
             modifier = modifier
         )
     }
