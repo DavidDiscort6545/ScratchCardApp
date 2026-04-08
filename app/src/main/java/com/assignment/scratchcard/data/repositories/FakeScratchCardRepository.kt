@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class FakeScratchCardRepository : ScratchCardRepository {
     private val cardFlow = MutableStateFlow(
-        ScratchCard(code = "Scratch the Card to reveal the code!")
+        ScratchCard(code = "Scratch to reveal the code!")
     )
 
     override fun getScratchCard(): Flow<ScratchCard> = cardFlow.asStateFlow()
