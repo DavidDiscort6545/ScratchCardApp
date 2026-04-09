@@ -42,6 +42,17 @@ android {
 
 dependencies {
 
+    // Retrofit - core
+    implementation(libs.retrofit)
+
+    // Gson Converter - for automatic parsing of JSONs
+    implementation(libs.converter.gson)
+
+    // OkHttp (used for logging and timeouts)
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
+
+
     // Koin for Android (core + viewmodel support)
     implementation(libs.koin.android)
     // Koin for Jetpack Compose
