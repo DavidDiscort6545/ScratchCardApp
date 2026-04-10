@@ -11,6 +11,6 @@ fun Module.useCases() {
     factory { ActivateCardUseCase(get()) }
     factory { GetScratchCardUseCase(get()) }
     factory { SaveScratchCardUseCase(get()) }
-    factory { UpdateScratchProgressUseCase() }
+    factory { UpdateScratchProgressUseCase(get()) }
 
 }

@@ -32,13 +32,15 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.get
+import com.assignment.scratchcard.domain.entities.ScratchCardState
 
 @Composable
 fun ScratchCardCanvas(
-    lines: List<List<Offset>>,
-    cardCodeDisplayText: String,
-    onScratchStateChanged: (List<Offset> , Float) -> Unit,
     modifier: Modifier = Modifier,
+    lines: List<List<Offset>>,
+    currentCardState: ScratchCardState = ScratchCardState.Unscratched,
+    cardCodeDisplayText: String,
+    onScratchStateChanged: (List<Offset>, Float) -> Unit,
     isEditable: Boolean = true,
 ) {
 
@@ -55,11 +57,13 @@ fun ScratchCardCanvas(
     val helperPaint = remember {
         Paint().apply {
             style = android.graphics.Paint.Style.STROKE
-            strokeWidth = 20f //This value needs to match with the small bitmap, change with care (original value 100f)
+            strokeWidth =
+                20f //This value needs to match with the small bitmap, change with care (original value 100f)
             strokeCap = android.graphics.Paint.Cap.ROUND
             strokeJoin = android.graphics.Paint.Join.ROUND
             // Using SRC_OVER, because in ALPHA_8 bitmap we draw just swoops
-            xfermode = android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.SRC_OVER)
+            xfermode =
+                android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.SRC_OVER)
             color = android.graphics.Color.BLACK // full intensity
             alpha = 255
         }
@@ -94,7 +98,8 @@ fun ScratchCardCanvas(
                         }
 
                         // 5. Count pixels, which are not transparent (not 0)
-                        val scratchedCountFloat = scratchedPixelsCount(calcWidth, calcHeight, helperBitmap).toFloat()
+                        val scratchedCountFloat =
+                            scratchedPixelsCount(calcWidth, calcHeight, helperBitmap).toFloat()
 
                         val finalProgress = scratchedCountFloat / (calcWidth * calcHeight)
                         onScratchStateChanged(currentStroke, finalProgress)
@@ -103,7 +108,8 @@ fun ScratchCardCanvas(
                 }
             ) { change, _ ->
                 change.consume()
-                currentPathPoints = currentPathPoints + change.position // here we are accumulation change to the path
+                currentPathPoints =
+                    currentPathPoints + change.position // here we are accumulation change to the path
             }
         }
     } else Modifier
@@ -125,29 +131,31 @@ fun ScratchCardCanvas(
         }
 
         // 2. top layer (scratch surface)
-        Canvas(
-            modifier = Modifier
-                .fillMaxSize()
-                .then(editableModifier)
-        ) {
-            // we will draw light gray area, which will we erase by finger movement
-            with(drawContext.canvas.nativeCanvas) {
-                val checkPoint = saveLayer(null, null)
+        if (currentCardState == ScratchCardState.Unscratched) {
+            Canvas(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(editableModifier)
+            ) {
+                // we will draw light gray area, which will we erase by finger movement
+                with(drawContext.canvas.nativeCanvas) {
+                    val checkPoint = saveLayer(null, null)
 
-                // the scratching are - could be replace with different resource file in future version
-                drawRect(Color.LightGray)
+                    // the scratching are - could be replace with different resource file in future version
+                    drawRect(Color.LightGray)
 
-                // draw all saved paths
-                lines.forEach { line ->
-                    drawScratchLine(line)
+                    // draw all saved paths
+                    lines.forEach { line ->
+                        drawScratchLine(line)
+                    }
+
+                    // here we are drawing currently drawn line
+                    if (currentPathPoints.isNotEmpty()) {
+                        drawScratchLine(currentPathPoints)
+                    }
+
+                    restoreToCount(checkPoint)
                 }
-
-                // here we are drawing currently drawn line
-                if (currentPathPoints.isNotEmpty()) {
-                    drawScratchLine(currentPathPoints)
-                }
-
-                restoreToCount(checkPoint)
             }
         }
     }

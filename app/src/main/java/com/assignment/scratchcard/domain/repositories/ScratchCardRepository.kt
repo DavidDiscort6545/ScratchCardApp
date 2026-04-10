@@ -23,4 +23,6 @@ interface ScratchCardRepository {
     suspend fun activateCard(card: ScratchCard): Result<Unit>
 
     suspend fun updateCard(card: ScratchCard)
+
+    suspend fun generateRandomUUID(): String
 }
