@@ -39,22 +39,13 @@ class ScratchCardViewModel(
             .launchIn(viewModelScope)
     }
 
-    fun activateCard() {
-        val currentCard = _uiState.value.card ?: return
-        if (uiState.value.isActivating) return
-        viewModelScope.launch {
-            _uiState.update { it.copy(isActivating = true) }
-
-            activateCardUseCase(currentCard)
-                .onSuccess { _uiState.update { it.copy(isActivating = false) } }
-                .onFailure { error ->
-                    _uiState.update { it.copy(isActivating = false, errorMessage = error.message) }
-                }
-        }
-    }
-
-    fun getInfoText(cardState:ScratchCardState?):String {
-        return when (cardState){
+    /**
+     * Info text informs user about current state of the card and possible action what user can do.
+     * @param cardState current card state dictates actions what user can do
+     * @return String that will be displayed on screen
+     */
+    fun getInfoText(cardState: ScratchCardState?): String {
+        return when (cardState) {
             ScratchCardState.Unscratched -> "Activate the card, after scratching it"
             ScratchCardState.Scratched -> "Card is scratched ! Activate the card!"
             ScratchCardState.Activated -> "Card is activated !"
@@ -77,18 +68,23 @@ class ScratchCardViewModel(
         return currentCard.state == ScratchCardState.Activated
     }
 
-    fun isCardFullyRevealed(): Boolean {
-        val currentCard = _uiState.value.card ?: return false
-        return currentCard.scratchProgress > 0.95f
-    }
-
+    /**
+     * As user Scratches the card, they create path,
+     * which we want to save to current card that we have in the system.
+     * Card remembers these strokes, so it could be displayed
+     * on all screens that wants to display card scratch progress.
+     * @param newPoints new points that we want to add to current paths in our card.
+     * If empty list is provided. No changes to path will be done.
+     * @param progress Here is float value (0..1) representing 0-100% od scratch progress of the card.
+     * When threshold is reached than card state is changed to [ScratchCardState.Scratched]
+     */
     fun updateScratchState(newPoints: List<Offset>, progress: Float) {
         val currentCard = _uiState.value.card ?: return
 
         // 1. Join old scratches with new swipe
         val updatedLines = currentCard.scratchedLines + listOf(newPoints)
 
-        // Musíme mu poslať kartu, ktorá už má v sebe tie nové čiary!
+        // add lines to our current card and work with updated card
         val cardWithLines = currentCard.copy(scratchedLines = updatedLines)
 
         // since we have suspend function in this function we want to avoid running it multiple times
@@ -96,12 +92,12 @@ class ScratchCardViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isUpdatingCard = true) }
             try {
-                // 2. Necháme UseCase vypočítať stav (percentá + Scratched stav)
+                // 2. UseCase will calculate (percentage and ScratchState based on business logic)
                 val finalCard = updateScratchProgressUseCase(cardWithLines, progress)
 
-                // 3. Uložíme do repozitára (tým sa cez Flow zaktualizuje aj UI)
+                // 3. Save to repo (Flow will update UI as expected consequence)
                 saveScratchCardUseCase(finalCard)
-            }catch (e :CancellationException) {
+            } catch (e: CancellationException) {
                 println("Updating Scratch card with UUID was canceled unexpectedly! Try again !")
                 throw e
             } finally {
@@ -111,10 +107,27 @@ class ScratchCardViewModel(
         }
     }
 
-    fun scratchCard() {
+    //-------------------
+    //actions for buttons
+    fun scratchCardFully() {
         updateScratchState(
-            newPoints = listOf(),//TODO we want to have reverse here ... all the points ...
+            newPoints = listOf(),// value here is irrelevant after card is fully scratched
             progress = 1f
         )
     }
+
+    fun activateCard() {
+        val currentCard = _uiState.value.card ?: return
+        if (uiState.value.isActivating) return
+        viewModelScope.launch {
+            _uiState.update { it.copy(isActivating = true) }
+
+            activateCardUseCase(currentCard)
+                .onSuccess { _uiState.update { it.copy(isActivating = false) } }
+                .onFailure { error ->
+                    _uiState.update { it.copy(isActivating = false, errorMessage = error.message) }
+                }
+        }
+    }
+    //-------------------
 }

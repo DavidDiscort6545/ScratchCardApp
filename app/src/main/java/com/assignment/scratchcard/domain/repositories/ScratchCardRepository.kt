@@ -22,7 +22,16 @@ interface ScratchCardRepository {
      */
     suspend fun activateCard(card: ScratchCard): Result<Unit>
 
+    /**
+     * Update card with new card.
+     * This will trigger recompose for the presentation layer
+     * and update card stored on data layer.
+     */
     suspend fun updateCard(card: ScratchCard)
 
+    /**
+     * Generated random UUID for the [ScratchCard.code].
+     * This will be used for activation API as a parameter for card activation.
+     */
     suspend fun generateRandomUUID(): String
 }

@@ -117,7 +117,7 @@ fun ScratchCardScreen(
                         text = firstButtonLabel,
                         enabled = viewModel.isCardUnscratched(),
                         modifier = Modifier.fillMaxWidth(),
-                        onClick = { viewModel.scratchCard() }
+                        onClick = { viewModel.scratchCardFully() }
                     )
                 }
 

@@ -24,8 +24,7 @@ class ScratchCardRepositoryImpl(
     override suspend fun activateCard(card: ScratchCard): Result<Unit> {
         return withContext(appScope.coroutineContext) {
             try {
-                val response = api.fetchActivationCode(card.code)
-                val androidVersionStr = response.getOrThrow()
+                val androidVersionStr = api.fetchActivationCode(card.code)
                 val version = androidVersionStr.toIntOrNull() ?: 0
 
                 return@withContext if (version > 277028) {

@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
                             // This tab will be first to appear, null value meas that card code is still not known
                             startDestination = MainOverviewRoute,
                             modifier = Modifier.padding(innerPadding),
-                        ){
+                        ) {
                             composable<MainOverviewRoute> {
 
                                 ScratchCardScreen(
@@ -70,7 +70,7 @@ class MainActivity : ComponentActivity() {
                                     onSecondNavigationButtonClick = {
                                         navController.navigate(ActivationRoute)
                                     },
-                                    onBackArrowClick = { navController.popBackStack()}
+                                    onBackArrowClick = { navController.popBackStack() }
                                 )
                             }
                             composable<ScratchCardRoute> {
@@ -85,7 +85,7 @@ class MainActivity : ComponentActivity() {
                                         navController.popBackStack()
                                     },
                                     onSecondNavigationButtonClick = {}, //the button will not navigate to anywhere
-                                    onBackArrowClick = { navController.popBackStack()}
+                                    onBackArrowClick = { navController.popBackStack() }
                                 )
 
                             }
@@ -101,7 +101,7 @@ class MainActivity : ComponentActivity() {
                                         navController.popBackStack()
                                     },
                                     onSecondNavigationButtonClick = {}, //the button will not navigate to anywhere
-                                    onBackArrowClick = { navController.popBackStack()}
+                                    onBackArrowClick = { navController.popBackStack() }
                                 )
                             }
                         }
